@@ -1,4 +1,3 @@
-
 import requests
 from bs4 import BeautifulSoup
 
@@ -57,3 +56,26 @@ if div_skill_priority_path:
         
 print("Skill Order:")
 print(skills)
+
+# Counters
+
+counters = []
+div_matchups_toughest = soup.find('div', class_='matchups', id='toughest-matchups')
+
+if div_matchups_toughest:
+    subdivs_champion_name = div_matchups_toughest.find_all('div', class_='champion-name')
+    
+    
+for subdiv in subdivs_champion_name:
+    counters.append(subdiv.text.strip())
+    
+
+print("Counters:")
+print(counters)
+
+# Build
+
+url = 'https://www.op.gg/champions/zac/build'
+response = requests.get(url)
+soup = BeautifulSoup(response.text, 'html.parser')
+

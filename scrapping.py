@@ -8,8 +8,16 @@ soup = BeautifulSoup(response.text, 'html.parser')
 # Runas
 
 links_imagens_runas = set()
-active_subdivs = soup.find_all('div', class_='perk perk-active')
-for active_subdiv in active_subdivs:
+active_subdivs1 = soup.find_all('div', class_='perk perk-active')
+active_subdivs2 = soup.find_all('div', class_='perk keystone perk-active')
+
+for active_subdiv in active_subdivs1:
+    imagens = active_subdiv.find_all('img')
+    
+    for img in imagens:
+        links_imagens_runas.add(img['src'])
+        
+for active_subdiv in active_subdivs2:
     imagens = active_subdiv.find_all('img')
     
     for img in imagens:
@@ -24,6 +32,21 @@ for link in links_imagens_runas:
 
 print("Runas:")
 print(runas)
+
+# Stats
+
+shards_data = []
+
+shard_active_divs = soup.find_all('div', class_='shard shard-active')
+for shard_active_div in shard_active_divs:
+    shard_image = shard_active_div.find('img')
+    shard_name = shard_image['alt']
+    shards_data.append(shard_name)
+
+shards_data = shards_data[:-3]
+
+print("Stats:")
+print(shards_data)
 
 # Summoner Spells
 
@@ -75,7 +98,24 @@ print(counters)
 
 # Build
 
-url = 'https://www.op.gg/champions/zac/build'
+url = 'https://probuildstats.com/champion/zac?role=jungle'
 response = requests.get(url)
 soup = BeautifulSoup(response.text, 'html.parser')
 
+items_data = []
+
+items = soup.find_all('div', class_='item')
+
+for item in items:
+    item_name = item.find('img')['alt']
+    if not item_name.startswith('Summoner'):
+        pick_rate = int(item.find('div', class_='pick-rate').get_text(strip=True).replace('%', ''))
+        if pick_rate >= 15:
+            item_data = {
+                'item': item_name,
+                'pick': f"{pick_rate}%"
+            }
+            items_data.append(item_data)
+
+print("Items:")
+print(items_data)

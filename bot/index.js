@@ -1,4 +1,7 @@
-const { Discord, Client, GatewayIntentBits } = require('./imports');
+//require('dotenv').config();
+const fs = require('fs');
+const Discord = require('discord.js');
+const { Client, GatewayIntentBits, ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = Discord;
 
 const client = new Client({
   intents: [
@@ -30,5 +33,5 @@ client.on('interactionCreate', (interaction) => {
 
 });
 
-client.login(process.env.BOT_TOKEN);
+client.login("MTIxODM5NzIwNDE1MTE0MDM5Mw.GCSl_p.Ozs3Z7-VXL_mmcQFcmopfC1Sd1yYfoNQ88eSwI");
 module.exports = client;

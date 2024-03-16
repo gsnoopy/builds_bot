@@ -3,7 +3,7 @@ const fs = require("fs");
 module.exports = async (client) => {
   const SlashsArray = [];
 
-  fs.readdir(`./comandos`, (error, folder) => {
+  fs.readdir(`./commands`, (error, folder) => {
     if (error) {
       console.error(error);
       return;

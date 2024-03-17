@@ -1,6 +1,9 @@
 const Discord = require("discord.js");
 const axios = require("axios");
+
 const championInfo = require("../../../champion_info.json");
+const itemsTranslation = require("../../../itens.json");
+const spellsTranslation = require("../../../spells.json");
 
 module.exports = {
   name: "build",
@@ -28,7 +31,7 @@ module.exports = {
       const championName = interaction.options.getString("campeão");
       const role = interaction.options.getString("rota");
 
-      let championData = null;n
+      let championData = null;
       for (const champion of championInfo) {
         if (champion.name.toLowerCase() === championName.toLowerCase() || champion.alias.toLowerCase() === championName.toLowerCase()) {
           championData = champion;
@@ -48,7 +51,10 @@ module.exports = {
       };
 
       const response = await axios.post(apiUrl, requestData);
-      const buildData = response.data;
+      let buildData = response.data;
+
+      buildData.items = translateItems(buildData.items);
+      buildData.spells = translateSpells(buildData.spells);
 
       const embed = new Discord.EmbedBuilder()
         .setTitle(`${championData.alias}`)
@@ -57,13 +63,13 @@ module.exports = {
           { name: "Skill Order", value: buildData.skill_order.join(" - ") },
           { name: "Runes", value: buildData.runas.join("\n") },
           { name: "Stats", value: buildData.stats.join("\n") },
+          { name: "Spells", value: buildData.spells.join("\n")},
           { name: "Items", value: buildData.items.map(item => `${item.item} ${item.pick_rate}`).join("\n") },
           { name: "Counters", value: buildData.counters.join(" ") }
         )
         .setTimestamp();
 
-        
-      await interaction.editReply({ embeds: [embed] });
+      await interaction.editReply({ embeds: [embed]});
 
     } catch (error) {
       console.error("Ocorreu um erro:", error);
@@ -71,3 +77,27 @@ module.exports = {
     }
   }
 };
+
+function translateItems(items) {
+  const translatedItems = items.map(item => {
+    const itemName = item.item;
+    const translation = itemsTranslation.find(item => item.en_us === itemName);
+    if (translation && translation.pt_br) {
+      return { item: translation.pt_br, pick_rate: item.pick_rate };
+    }
+    return item;
+  });
+  return translatedItems;
+}
+
+function translateSpells(spells) {
+  const translatedSpells = spells.map(spell => {
+    const spellName = spell.startsWith("Summoner Spell") ? spell.substring(15) : spell;
+    const translation = spellsTranslation.find(item => item.en_us === spellName);
+    if (translation && translation.pt_br) {
+      return translation.pt_br;
+    }
+    return spell;
+  });
+  return translatedSpells;
+}

@@ -1,4 +1,4 @@
-//require('dotenv').config();
+require('dotenv').config();
 const fs = require('fs');
 const Discord = require('discord.js');
 const { Client, GatewayIntentBits, ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = Discord;
@@ -19,7 +19,7 @@ client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
 
-client.on('interactionCreate', (interaction) => {
+client.on('interactionCreate', async (interaction) => {
 
   if (interaction.type === Discord.InteractionType.ApplicationCommand) {
 
@@ -30,8 +30,7 @@ client.on('interactionCreate', (interaction) => {
     }
 
   }
-
 });
 
-client.login("MTIxODM5NzIwNDE1MTE0MDM5Mw.GCSl_p.Ozs3Z7-VXL_mmcQFcmopfC1Sd1yYfoNQ88eSwI");
+client.login(process.env.TOKEN);
 module.exports = client;

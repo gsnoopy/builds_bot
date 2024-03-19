@@ -1,9 +1,13 @@
 const Discord = require("discord.js");
 const axios = require("axios");
+const { AttachmentBuilder } = require('discord.js');
 
 const championInfo = require("../../../champion_info.json");
 const itemsTranslation = require("../../../itens.json");
 const spellsTranslation = require("../../../spells.json");
+const runesImages = require("../../../runes.json");
+
+const createImage = require('../../utils/createImage');
 
 module.exports = {
   name: "build",
@@ -56,9 +60,23 @@ module.exports = {
       buildData.items = translateItems(buildData.items);
       buildData.spells = translateSpells(buildData.spells);
 
+      const runesNames = buildData.runas;
+
+      const runesUrls = runesNames.map(nameRune => {
+        const imageUrl = runesImages[nameRune];
+        return imageUrl;
+      });
+
+      const nomeDoArquivo = '../../temp/imagemCombinada.png';
+
+      await createImage(runesUrls, 150, 150, nomeDoArquivo);
+      const file = new AttachmentBuilder('../../temp/imagemCombinada.png');
+
+
       const embed = new Discord.EmbedBuilder()
         .setTitle(`${championData.alias}`)
         .setThumbnail(`${championData.splash}`)
+        .setImage(`attachment://imagemCombinada.png`)
         .addFields(
           { name: "Skill Order", value: buildData.skill_order.join(" - ") },
           { name: "Runes", value: buildData.runas.join("\n") },
@@ -67,9 +85,21 @@ module.exports = {
           { name: "Items", value: buildData.items.map(item => `${item.item} ${item.pick_rate}`).join("\n") },
           { name: "Counters", value: buildData.counters.join(" ") }
         )
-        .setTimestamp();
+        .setTimestamp()
+        .setFooter({ text: 'Developed by awk_' });
 
-      await interaction.editReply({ embeds: [embed]});
+        const buttons = new Discord.ActionRowBuilder().addComponents(
+          new Discord.ButtonBuilder()
+            .setLabel('u.gg')
+            .setURL(`https://u.gg/lol/champions/${championName}/build/${role}`)
+            .setStyle(Discord.ButtonStyle.Link),
+          new Discord.ButtonBuilder()
+            .setLabel('ProBuilds')
+            .setURL(`https://probuildstats.com/champion/${championName}?role=${role}`)
+            .setStyle(Discord.ButtonStyle.Link),
+      );
+
+      await interaction.editReply({ embeds: [embed], components: [buttons], files: [file] });
 
     } catch (error) {
       console.error("Ocorreu um erro:", error);

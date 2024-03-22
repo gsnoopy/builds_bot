@@ -2,12 +2,12 @@ const Discord = require("discord.js");
 const axios = require("axios");
 const { AttachmentBuilder } = require('discord.js');
 
-const championInfo = require("../../../champion_info.json");
-const itemsTranslation = require("../../../itens.json");
-const spellsTranslation = require("../../../spells.json");
+const championInfo = require("../../../champion_info.json");;
 const runesImages = require("../../../runes.json");
 
 const createImage = require('../../utils/createImage');
+const translateItems = require('../../utils/translateItems');
+const translateSpells = require('../../utils/translateSpells');
 
 module.exports = {
   name: "build",
@@ -108,26 +108,4 @@ module.exports = {
   }
 };
 
-function translateItems(items) {
-  const translatedItems = items.map(item => {
-    const itemName = item.item;
-    const translation = itemsTranslation.find(item => item.en_us === itemName);
-    if (translation && translation.pt_br) {
-      return { item: translation.pt_br, pick_rate: item.pick_rate };
-    }
-    return item;
-  });
-  return translatedItems;
-}
 
-function translateSpells(spells) {
-  const translatedSpells = spells.map(spell => {
-    const spellName = spell.startsWith("Summoner Spell") ? spell.substring(15) : spell;
-    const translation = spellsTranslation.find(item => item.en_us === spellName);
-    if (translation && translation.pt_br) {
-      return translation.pt_br;
-    }
-    return spell;
-  });
-  return translatedSpells;
-}
